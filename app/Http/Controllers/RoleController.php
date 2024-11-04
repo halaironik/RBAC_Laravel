@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Auth;
+use App\Events\RoleDeleted;
 
 class RoleController extends Controller
 {
@@ -105,6 +107,8 @@ class RoleController extends Controller
 
         if($role->delete())
         {
+            event(new RoleDeleted($role, Auth::user()));
+
             return redirect()->route('roles.index')->with('success', 'Role deleted successfully');
         }
 

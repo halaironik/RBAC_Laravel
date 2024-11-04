@@ -7,9 +7,11 @@ use App\Models\Permission;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+
 class Role extends SpatieRole
 {
     use SoftDeletes;
+
 
     public function permissions() : BelongsToMany
     {

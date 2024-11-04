@@ -8,7 +8,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Log;
 
 class User extends Authenticatable
 {
@@ -50,25 +49,18 @@ class User extends Authenticatable
     }
 
     public function hasPermission($permission)
-{
-    $hasPermission = $this->roles()
+    {
+        $hasPermission = $this->roles()
         ->whereHas('permissions', function ($query) use ($permission) {
             $query->where('name', $permission);
         })->exists();
 
-        Log::info('Permission Check Details', [
-            'user_id' => $this->id,
-            'permission' => $permission,
-            'has_permission' => $hasPermission,
-            'roles' => $this->roles()->pluck('name'),
-            'permissions' => $this->roles()
-                ->with('permissions')
-                ->get()
-                ->pluck('permissions')
-                ->flatten()
-                ->pluck('name')
-        ]);
-
         return $hasPermission;
+    }
+
+    public function scopeByRole($query, $roles) {
+        return $query->whereHas('roles', function($query) use ($roles) {
+            $query->whereIn('name', (array) $roles);
+        });
     }
 }
